@@ -1,0 +1,83 @@
+USE s114376_ProjectMaxitet;
+
+CREATE TABLE SportsHalls (
+    HallID INT AUTO_INCREMENT PRIMARY KEY,
+    HallName VARCHAR(100) NOT NULL,
+    Location VARCHAR(100),
+    Capacity INT
+);
+
+CREATE TABLE Clients (
+    ClientID INT AUTO_INCREMENT PRIMARY KEY,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Phone VARCHAR(15),
+    DateOfBirth DATE,
+    RegistrationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    HallID INT,
+    FOREIGN KEY (HallID) REFERENCES SportsHalls(HallID) ON DELETE SET NULL
+);
+
+CREATE TABLE Trainers (
+    TrainerID INT AUTO_INCREMENT PRIMARY KEY,
+    FirstName VARCHAR(50) NOT NULL,
+    LastName VARCHAR(50) NOT NULL,
+    Specialization VARCHAR(100),
+    Email VARCHAR(100) UNIQUE NOT NULL,
+    Phone VARCHAR(15),
+    HireDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    HallID INT,
+    FOREIGN KEY (HallID) REFERENCES SportsHalls(HallID) ON DELETE SET NULL
+);
+
+CREATE TABLE Memberships (
+    MembershipID INT AUTO_INCREMENT PRIMARY KEY,
+    MembershipType VARCHAR(50) NOT NULL,
+    DurationMonths INT NOT NULL,
+    Price DECIMAL(10, 2) NOT NULL
+);
+
+CREATE TABLE Classes (
+    ClassID INT AUTO_INCREMENT PRIMARY KEY,
+    ClassName VARCHAR(100) NOT NULL,
+    TrainerID INT,
+    Schedule DATETIME NOT NULL,
+    DurationMinutes INT NOT NULL,
+    FOREIGN KEY (TrainerID) REFERENCES Trainers(TrainerID) ON DELETE SET NULL
+);
+
+CREATE TABLE ClientClasses (
+    ClientClassID INT AUTO_INCREMENT PRIMARY KEY,
+    ClientID INT,
+    ClassID INT,
+    RegistrationDate TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (ClientID) REFERENCES Clients(ClientID) ON DELETE CASCADE,
+    FOREIGN KEY (ClassID) REFERENCES Classes(ClassID) ON DELETE CASCADE
+);
+
+CREATE TABLE ClientMemberships (
+    ClientMembershipID INT AUTO_INCREMENT PRIMARY KEY,
+    ClientID INT,
+    MembershipID INT,
+    StartDate DATE NOT NULL,
+    EndDate DATE NOT NULL,
+    FOREIGN KEY (ClientID) REFERENCES Clients(ClientID) ON DELETE CASCADE,
+    FOREIGN KEY (MembershipID) REFERENCES Memberships(MembershipID) ON DELETE CASCADE
+);
+
+CREATE TABLE SportsEquipment (
+    EquipmentID INT AUTO_INCREMENT PRIMARY KEY,
+    EquipmentName VARCHAR(100) NOT NULL,
+    Quantity INT NOT NULL,
+    HallID INT,
+    FOREIGN KEY (HallID) REFERENCES SportsHalls(HallID) ON DELETE CASCADE
+);
+
+CREATE TABLE Events (
+    EventID INT AUTO_INCREMENT PRIMARY KEY,
+    EventName VARCHAR(100) NOT NULL,
+    EventDate DATE NOT NULL,
+    HallID INT,
+    FOREIGN KEY (HallID) REFERENCES SportsHalls(HallID) ON DELETE SET NULL
+);
